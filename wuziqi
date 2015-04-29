@@ -1,0 +1,214 @@
+a. 棋盘的绘制
+public void draw_qipan(Graphics G) //画棋盘 15*15{	
+		G.setColor(Color.lightGray);
+		G.fill3DRect(10,10,300,300,true);
+		G.setColor(Color.black);
+		for(int i=1;i<16;i++){
+			G.drawLine(20,20*i,300,20*i);
+			G.drawLine(20*i,20,20*i,300);
+		}
+}              
+b. 添加按钮
+Button b1=new Button("开始");
+	Button b2=new Button("重置游戏");
+	Label lblWin=new Label(" ");
+	Checkbox ckbHB[]=new Checkbox[3];
+	Button exist = new Button("退出"); 
+	public void init(){
+		ckbHB[0]=new Checkbox("执白",ckgHB,false);
+		ckbHB[1]=new Checkbox("执黑",ckgHB,false);
+		ckbHB[2]=new Checkbox("观看",ckgHB, false);
+	}
+
+c. 鼠标棋子的触发事件
+public void mouseClicked(MouseEvent e) {
+		Graphics g=getGraphics();
+		int x1,y1;
+		x1=e.getX();
+		y1=e.getY();
+		if (e.getX()<20 || e.getX()>300 || e.getY()<20 || e.getY()>300) {
+			return;
+		}
+		if (x1%20>10) {
+			x1+=10;
+		}
+		if(y1%20>10) {
+	y1+=10;
+		}
+		x1=x1/20*20;
+		y1=y1/20*20;
+		set_Qizi(x1,y1);
+		m*=(-1);
+     }
+
+d. 按钮的触发事件
+   public void actionPerformed(ActionEvent e) {
+		Graphics g=getGraphics();
+		if (e.getSource()==b1) {
+			Game_start();
+		}
+		else{
+			Game_re();
+		}
+		if(e.getSource()==exist){
+			Game_re();
+			lblWin.setText(Get_qizi_color(color_Qizi)+"输了!");
+			intGame_Start=0;
+		}  
+
+e. 判断落子的位置及画出相应的黑白棋子
+public void set_Qizi(int x,int y) //落子{
+		if (intGame_Start==0) //判断游戏未开始{
+			return;
+		}
+		if (intGame_Body[x/20][y/20]!=0) {
+			return;
+		}
+		Graphics g=getGraphics();
+		if (color_Qizi==1)//判断黑子还是白子{
+			g.setColor(Color.black);
+			color_Qizi=0;
+		}
+		else{
+			g.setColor(Color.white);
+			color_Qizi=1;
+		}
+		g.fillOval(x-10,y-10,20,20);
+		intGame_Body[x/20][y/20]=color_Qizi+1;
+｝
+
+f. 判断胜负
+if (Game_win_1(x/20,y/20)) //判断输赢1{
+			lblWin.setText(Get_qizi_color(color_Qizi)+"赢了!");
+			intGame_Start=0;
+			}
+		if (Game_win_2(x/20,y/20)) //判断输赢2{
+			lblWin.setText(Get_qizi_color(color_Qizi)+"赢了!");
+			intGame_Start=0;
+		}
+		if (Game_win_3(x/20,y/20)) //判断输赢3{
+			lblWin.setText(Get_qizi_color(color_Qizi)+"赢了!");
+			intGame_Start=0;
+		}
+		if (Game_win_4(x/20,y/20)) //判断输赢4{
+			lblWin.setText(Get_qizi_color(color_Qizi)+"赢了!");
+			intGame_Start=0;
+		} 
+ }
+
+3.1创建棋盘类
+Public class WcyChess extends Applet implements ActionListener,MouseListener,MouseMotionListener,ItemListener{
+	int color_Qizi=0;//旗子的颜色标识 0:白子 1:黑子
+	int intGame_Start=0;//游戏开始标志 0未开始 1游戏中
+	int intGame_Body[][]=new int[16][16]; //设置棋盘棋子状态
+	int m=-1;
+	Button b1=new Button("开始");
+	Button b2=new Button("重置游戏");
+	Label lblWin=new Label(" ");
+	Checkbox ckbHB[]=new Checkbox[3];
+	Button exist = new Button("退出"); 
+	CheckboxGroup ckgHB=new CheckboxGroup();
+	NetchatClient chat=new NetchatClient();
+	public void init(){
+		setLayout(null);
+
+		addMouseListener(this);
+		add(b1);
+		b1.setBounds(330,50,80,30);
+		b1.addActionListener(this);
+		add(b2);
+		b2.setBounds(330,90,80,30);
+		b2.addActionListener(this);
+		ckbHB[0]=new Checkbox("执白",ckgHB,false);
+		ckbHB[0].setBounds(320,20,60,30);
+		ckbHB[1]=new Checkbox("执黑",ckgHB,false);
+		ckbHB[1].setBounds(380,20,60,30);
+		ckbHB[2]=new Checkbox("观看",ckgHB, false);
+		add(ckbHB[0]);
+		add(ckbHB[1]);
+		add(ckbHB[2]);
+		ckbHB[0].addItemListener(this);
+		ckbHB[1].addItemListener(this);
+		add(lblWin);
+		lblWin.setBounds(330,180,80,30);
+		lblWin.setBackground(Color.red);
+		lblWin.setText("胜利者！");//没有显示？
+		ckbHB[2].setBounds(440, 20,60, 30);
+		add(exist);
+		exist.setBounds(330,130,80,30);
+		exist.addActionListener(this);
+//		add(chat);chat.setBounds(20, 500, 300, 300);
+		chat.frame();
+		chat.setVisible(true);
+		Game_start_csh();
+		setSize(500,600); 
+		setVisible(true);
+	}
+	public void itemStateChanged(ItemEvent e) {
+		if (ckbHB[0].getState()) //选择黑子还是白子{
+			color_Qizi=0;
+		}
+		else{
+			color_Qizi=1;
+		}
+	}
+	public void mousePressed(MouseEvent e){}
+	public void mouseClicked(MouseEvent e) {
+		Graphics g=getGraphics();
+		int x1,y1;
+		x1=e.getX();
+		y1=e.getY();
+		if (e.getX()<20 || e.getX()>300 || e.getY()<20 || e.getY()>300) {
+			return;
+		}
+		if (x1%20>10) {
+			x1+=10;
+		}
+		if(y1%20>10) {
+			y1+=10;
+		}
+		x1=x1/20*20;
+		y1=y1/20*20;
+		set_Qizi(x1,y1);
+		m*=(-1);
+	}
+	public void actionPerformed(ActionEvent e) {
+		Graphics g=getGraphics();
+		if (e.getSource()==b1) {
+			Game_start();
+		}
+		else	{
+			Game_re();
+		}
+		if(e.getSource()==exist){
+			Game_re();
+			lblWin.setText(Get_qizi_color(color_Qizi)+"输了!");
+			intGame_Start=0;
+		}
+	}
+	public void mouseEntered(MouseEvent e){}
+	public void mouseExited(MouseEvent e){}
+	public void mouseReleased(MouseEvent e){}
+	public void mouseDragged(MouseEvent e){}
+	public void mouseMoved(MouseEvent e){}
+	public void paint(Graphics g) {
+		draw_qipan(g);
+}
+
+3.2判断输赢功能实现
+if (Game_win_1(x/20,y/20)){ //判断输赢1
+			lblWin.setText(Get_qizi_color(color_Qizi)+"赢了!");
+			intGame_Start=0;
+}
+if (Game_win_2(x/20,y/20))｛ //判断输赢2
+			lblWin.setText(Get_qizi_color(color_Qizi)+"赢了!");
+			intGame_Start=0;
+}
+		if (Game_win_3(x/20,y/20)) //判断输赢3{
+			lblWin.setText(Get_qizi_color(color_Qizi)+"赢了!");
+			intGame_Start=0;
+}
+		if (Game_win_4(x/20,y/20)) //判断输赢4{
+			lblWin.setText(Get_qizi_color(color_Qizi)+"赢了!");
+			intGame_Start=0;
+}
